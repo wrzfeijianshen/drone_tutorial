@@ -1,0 +1,40 @@
+version: "3"
+services:
+  drone-server:
+    container_name: drone_server
+    image: drone/drone:0.8
+    ports:
+      - 8182:8000
+      - 9000
+    volumes:
+      - ./data/drone:/var/lib/drone/
+    environment:
+      # 开启注册，此配置允许任何人自注册和登录系统
+      - DRONE_OPEN=true
+      #直接配置ip:port 会报错
+      - DRONE_HOST=http://111.111.111.50:8182
+      # Gogs服务器地址
+      - DRONE_GOGS_URL=http://111.111.111.36:8181
+      - DRONE_DEBUG=true
+      # 此SECRET为任意值
+      - DRONE_SECRET=drone.feijianshen.com
+      # 开启Gogs驱动
+      - DRONE_GOGS=true
+      - DRONE_GOGS_SKIP_VERIFY=false
+      - DRONE_GOGS_PRIVATE_MODE=true
+    restart: always
+
+  drone-agent:
+    container_name: drone_agent
+    image: drone/agent:0.8
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Drone Server 地址
+      - DRONE_SERVER=drone-server:9000
+      # 与Drone Server一致即可
+      - DRONE_SECRET=drone.feijianshen.com
+      - DRONE_DEBUG=true
+    restart: always
