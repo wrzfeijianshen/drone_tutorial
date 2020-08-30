@@ -1,0 +1,44 @@
+version: "3"
+networks:
+  nginx_net:
+    external: true
+
+services:
+  gitea_server:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: always
+    networks:
+      - nginx_net
+    volumes:
+      - ./data/gitea:/data
+    ports:
+      - "10080:3000"
+      - "222:22"
+    depends_on:
+      - gitea_db
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - DB_TYPE=mysql
+      - DB_HOST=gitea_db:3306
+      - DB_NAME=gitea
+      - DB_USER=gitea
+      - DB_PASSWD=gitea
+      # nginx_proxy 的反向代理,不用则不用设置
+      - VIRTUAL_HOST=git.dev.fjssoft.com
+      - VIRTUAL_PORT=3000
+
+  gitea_db:
+    image: mysql:8
+    restart: always
+    container_name: gitea_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=gitea
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=gitea
+      - MYSQL_DATABASE=gitea
+    networks:
+      - nginx_net
+    volumes:
+      - ./data/mysql:/var/lib/mysql
