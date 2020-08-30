@@ -2,6 +2,11 @@
 
 由于 1.0 的更新换代之后,增加了OAuth2支持性更好了, 对github,gitlab,gitea已经非常的友好了,而之前的博客是gogs的,所以今天单独来写一篇关于gitea的,gitlab应该也是类似的.
 
+``` 
+https://github.com/wrzfeijianshen/drone_tutorial
+docker地址放在  workspace\docker_2020_0830
+```
+
 #### 步骤1: 创建网络,开启反向代理
 
 虽然不知道运维大大们是怎么玩的,作为小小白的开发者,只关心怎么弄出来就可以了,怎么好看怎么玩是他们的事情咯
@@ -81,7 +86,7 @@ services:
 
 ![](img_files/2.png)
 
-![](img_files/3.png)
+![](img_files/19.png)
 
 ![](img_files/4.png)
 
@@ -245,3 +250,30 @@ DRONE_SERVER_HOST=http://192.168.0.70:10081
 
 在gitea中创建一个项目
 
+![](img_files/15.png)
+
+克隆到本地
+http://192.168.0.70:10080/fjs/drone_demo.git
+
+![](img_files/16.png)
+
+![](img_files/17.png)
+
+在项目根目录添加 文件
+.drone.yml
+
+```
+kind: pipeline
+name: default
+steps:
+- name: info
+  image: busybox
+  commands:
+    - echo "appdemo"
+    - echo "hello appdemo"
+    
+```
+
+然后提交,推送
+
+![](img_files/18.png)
